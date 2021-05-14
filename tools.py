@@ -1,4 +1,5 @@
 import requests
+from io import BytesIO
 import discord
 
 lines = {x.split(": ")[0]: x.split(": ")[1] for x in open("./info.txt", "rt").readlines()}
@@ -27,3 +28,6 @@ async def replace_emote(to_remove: discord.Emoji, new_name: str, new_image: byte
     guild: discord.Guild = to_remove.guild
     await to_remove.delete()
     return await guild.create_custom_emoji(name=new_name, image=new_image)
+
+def image_at(url: str):
+    return BytesIO(requests.get(str(url)).content).read()

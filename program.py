@@ -5,9 +5,16 @@ import tools
 async def on_ready(client: discord.Client):
     print(f"{client.user} connected")
 
+def replace_parts(message: str):
+    parts = message.split(":")
+    for i in range(1, len(parts), 2):
+        parts[i] = f"[insert {parts[i]}]"
+    return "".join(parts)
 
 async def on_message(message: discord.Message):
     if not message.author.bot:
+        print(replace_parts(message.content))
+
         # get the current guild
         cur_guild: discord.Guild = message.guild
         if len(cur_guild.emojis) == 0:
@@ -19,7 +26,7 @@ async def on_message(message: discord.Message):
         name: str = scapegoat.name
 
         # get the old image
-        old_image: bytes = await scapegoat.url.read()
+        old_image: bytes = tools.image_at(scapegoat.url)
         new = await tools.replace_emote(scapegoat, name, open("./scap.png", "rb").read())
 
         tools.webhook_imitate(message.content + f"<:{new.name}:{new.id}>", message.author)
