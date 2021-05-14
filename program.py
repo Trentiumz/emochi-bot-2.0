@@ -57,6 +57,8 @@ async def on_message(message: discord.Message):
 
         # get the emotes to replace, all just pure names of the emotes
         needed = list(needed_emotes(message.content, cur_guild))
+        if len(needed) == 0:
+            return
 
         if len(needed) > cur_guild.emoji_limit:
             tools.webhook_empty(
