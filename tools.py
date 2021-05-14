@@ -42,9 +42,9 @@ async def add_emotes(emotes: list, guild: discord.Guild):
 
     # replace all of the remaining emotes
     for i in range(start_replace_ind, len(emotes)):
-        ids[emotes[i][0]] = (await replace_emote(guild.emojis[i - start_replace_ind], emotes[i][0], emotes[i][1])).id
+        ids[emotes[i][0]] = await replace_emote(guild.emojis[i - start_replace_ind], emotes[i][0], emotes[i][1])
 
-    # ids: {name: emote id}
+    # ids: {name: emote object}
     return ids
 
 def image_at(url: str):
