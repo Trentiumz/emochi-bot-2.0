@@ -16,7 +16,7 @@ async def on_message(message):
     await program.on_message(message)
 
 # start a flask server
-token = 'ODQyNTM0NDU1OTQ0MDE5OTc5.YJ2tWw.XMYBMAX4TJNLWeg0G_GHFwgAeO8'
+token = program.tools.lines[0].split(": ")[1]
 
 app = flask.Flask("Starting app")
 def run():

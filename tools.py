@@ -4,7 +4,7 @@ import discord
 lines = open("./info.txt", "rt").readlines()
 
 def get_hook_url():
-    return lines[0].split(": ")[1]
+    return lines[1].split(": ")[1]
 
 def webhook_imitate(message: str, user: discord.User):
     hook_url = get_hook_url()
