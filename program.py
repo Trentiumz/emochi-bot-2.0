@@ -1,6 +1,7 @@
 import discord
 import tools
 
+links = {x.split("|")[0]: x.split("|")[1] for x in open("./emoji_links.txt", "rt").readlines()}
 
 async def on_ready(client: discord.Client):
     print(f"{client.user} connected")
