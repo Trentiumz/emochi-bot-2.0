@@ -25,16 +25,17 @@ def webhook_empty(message: str):
     }
     requests.post(hook_url, json=obj)
 
-async def replace_emote(to_remove: discord.Emoji, new_name: str, new_image: bytes):
-    guild: discord.Guild = to_remove.guild
-    await to_remove.delete()
-    return await guild.create_custom_emoji(name=new_name, image=new_image)
-
-def image_at(url: str):
-    return BytesIO(requests.get(str(url)).content).read()
 
 def regify(thing: str):
     return re.sub("\*", "\\*", thing)
+
+async def replace_emote(to_remove: discord.Emoji, new_name: str, new_image: bytes):
+    guild: discord.Guild = to_remove.guild
+    await to_remove.delete()
+    return await guild.create_custom_emoji(name=regify(new_name), image=new_image)
+
+def image_at(url: str):
+    return BytesIO(requests.get(str(url)).content).read()
 
 # emotes: [(name, image)]
 async def add_emotes(emotes: list, guild: discord.Guild, links: dict):
@@ -49,7 +50,7 @@ async def add_emotes(emotes: list, guild: discord.Guild, links: dict):
         if emotes[i] in existing_emotes:
             ids[emotes[i]] = existing_emotes[emotes[i]]
         else:
-            ids[emotes[i]] = await guild.create_custom_emoji(name=emotes[i], image=image_at(links[emotes[i]]))
+            ids[emotes[i]] = await guild.create_custom_emoji(name=regify(emotes[i]), image=image_at(links[emotes[i]]))
 
     # replace all of the remaining emotes
     for i in range(start_replace_ind, len(emotes)):

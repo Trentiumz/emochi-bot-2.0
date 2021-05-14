@@ -1,4 +1,5 @@
 import discord
+import asyncio
 import re
 import tools
 
@@ -32,6 +33,21 @@ def replace_with_emotes(message: str, loaded_emotes: dict):
         message = re.sub(f":{tools.regify(emote_name)}:", str(loaded_emotes[emote_name]), message)
     return message
 
+webhook_updating = False
+async def send_webhook(needed: list, cur_guild: discord.Guild, message: discord.Message):
+    global webhook_updating
+    while webhook_updating:
+        await asyncio.sleep(0.01)
+
+    webhook_updating = True
+    await asyncio.sleep(1)
+    # update emotes and get the update message
+    needed_ids = await tools.add_emotes(needed, cur_guild, links)
+    k = replace_with_emotes(message.content, needed_ids)
+
+    # send the new message
+    tools.webhook_imitate(k, message.author)
+    webhook_updating = False
 
 async def on_message(message: discord.Message):
     if not message.author.bot:
@@ -47,12 +63,8 @@ async def on_message(message: discord.Message):
                 f"Turns out the server doesn't have enough emote slots to hold your {len(needed)} emotes!")
             return
 
-        # update emotes and get the update message
-        needed_ids = await tools.add_emotes(needed, cur_guild, links)
-        k = replace_with_emotes(message.content, needed_ids)
-
-        # send the new message
-        tools.webhook_imitate(k, message.author)
+        # send a webhook
+        await send_webhook(needed, cur_guild, message)
 
         # delete the original message
         await message.delete()
