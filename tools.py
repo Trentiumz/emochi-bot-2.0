@@ -40,12 +40,13 @@ def image_at(url: str):
 # emotes: [(name, image)]
 async def add_emotes(emotes: list, guild: discord.Guild, links: dict):
     limit = guild.emoji_limit
+    guild_emotes = await guild.fetch_emojis()
     # index we should start to replace instead of add emotes
-    start_replace_ind = min(len(emotes), limit - len(guild.emojis))
+    start_replace_ind = min(len(emotes), limit - len(guild_emotes))
     ids = {}
 
     # add all emotes possible
-    existing_emotes = {str(x.name): x for x in guild.emojis}
+    existing_emotes = {str(x.name): x for x in guild_emotes}
     for i in range(start_replace_ind):
         if emotes[i] in existing_emotes:
             ids[emotes[i]] = existing_emotes[emotes[i]]
@@ -54,7 +55,7 @@ async def add_emotes(emotes: list, guild: discord.Guild, links: dict):
 
     # replace all of the remaining emotes
     for i in range(start_replace_ind, len(emotes)):
-        ids[emotes[i]] = await replace_emote(guild.emojis[i - start_replace_ind], emotes[i], image_at(links[emotes[i]]))
+        ids[emotes[i]] = await replace_emote(guild_emotes[i - start_replace_ind], emotes[i], image_at(links[emotes[i]]))
 
     # ids: {name: emote object}
     return ids
