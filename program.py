@@ -7,10 +7,7 @@ import tools
 links = {x.split("|")[0]: x.split("|")[1].rstrip()for x in open("./emoji_links.txt", "rt").readlines()}
 
 # list of emotes but formatted for regex
-emotes = []
-for key in links:
-    s = re.sub("\*", "\\*", key)
-    emotes.append(f":{s}:")
+emotes = [f":{s}:" for s in links]
 
 # a regex for which we can find all of the possible emotes
 regex_for_emotes = "|".join(emotes)
@@ -22,7 +19,7 @@ async def on_ready(client: discord.Client):
 
 # find what emote names we need
 def needed_emotes(message: str, guild: discord.Guild):
-    message = re.sub("|".join(str(emote) for emote in guild.emojis), "", message)
+    message = re.sub("<:.+:\d+>|<a:.+:\d+>", "", message)
     needed = [x[1:-1] for x in re.findall(regex_for_emotes, message)]
     return list(set(needed))
 
