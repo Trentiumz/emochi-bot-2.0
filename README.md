@@ -1,18 +1,20 @@
 # emochi-bot-2.0
 An Emoji bot for discord
 
-### How to set it up
+## How to set it up
 Create an info.txt inside your working directory; in the same directory as your source files
 
-Inside info.txt, have 2 lines: 
+#### Inside info.txt, have 2 lines: 
+
 token: [bot token]
+
 hook_url: [webhook url going to your desired channel]
 
-### Current progress
+## Current progress
 
 This bot now works, but there are still a few optimizations and functionality to add
 
-### API's used
+## API's used
 - Discord.py
 
 - Flask
