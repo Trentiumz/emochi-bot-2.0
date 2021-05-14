@@ -29,14 +29,23 @@ async def replace_emote(to_remove: discord.Emoji, new_name: str, new_image: byte
     await to_remove.delete()
     return await guild.create_custom_emoji(name=new_name, image=new_image)
 
+# emotes: [(name, image)]
 async def add_emotes(emotes: list, guild: discord.Guild):
     limit = guild.emoji_limit
+    # index we should start to replace instead of add emotes
+    start_replace_ind = min(len(emotes), limit - len(guild.emojis))
+    ids = {}
+
     # add all emotes possible
-    for i in range(min(len(emotes), limit - len(guild.emojis))):
-        await guild.create_custom_emoji(name=emotes[i][0], image=emotes[i][1])
+    for i in range(start_replace_ind):
+        ids[emotes[i][0]] = await guild.create_custom_emoji(name=emotes[i][0], image=emotes[i][1])
+
     # replace all of the remaining emotes
-    for i in range(min(len(emotes), limit - len(guild.emojis)), len(emotes)):
-        await replace_emote(guild.emojis[i], emotes[i][0], emotes[i][1])
+    for i in range(start_replace_ind, len(emotes)):
+        ids[emotes[i][0]] = (await replace_emote(guild.emojis[i - start_replace_ind], emotes[i][0], emotes[i][1])).id
+
+    # ids: {name: emote id}
+    return ids
 
 def image_at(url: str):
     return BytesIO(requests.get(str(url)).content).read()
