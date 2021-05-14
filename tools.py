@@ -8,6 +8,7 @@ lines = {x.split(": ")[0]: x.split(": ")[1] for x in open("./info.txt", "rt").re
 def get_hook_url():
     return lines["hook_url"]
 
+# send webhook imitating another user
 def webhook_imitate(message: str, user: discord.User):
     hook_url = get_hook_url()
     obj = {
@@ -18,6 +19,7 @@ def webhook_imitate(message: str, user: discord.User):
 
     requests.post(hook_url, json=obj)
 
+# send an empty webhook
 def webhook_empty(message: str):
     hook_url = get_hook_url()
     obj = {
@@ -25,22 +27,20 @@ def webhook_empty(message: str):
     }
     requests.post(hook_url, json=obj)
 
-
-def regify(thing: str):
-    return re.sub("\*", "\\*", thing)
-
+# replace the current emote with a new one
 async def replace_emote(to_remove: discord.Emoji, new_name: str, new_image: bytes):
     guild: discord.Guild = to_remove.guild
     await to_remove.delete()
-    return await guild.create_custom_emoji(name=regify(new_name), image=new_image)
+    return await guild.create_custom_emoji(name=new_name, image=new_image)
 
+# gets the image at some url
 def image_at(url: str):
     return BytesIO(requests.get(str(url)).content).read()
 
 # emotes: [(name, image)]
 async def add_emotes(emotes: list, guild: discord.Guild, links: dict):
     limit = guild.emoji_limit
-    guild_emotes = await guild.fetch_emojis()
+    guild_emotes = guild.emojis
     # index we should start to replace instead of add emotes
     start_replace_ind = min(len(emotes), limit - len(guild_emotes))
     ids = {}
@@ -51,7 +51,7 @@ async def add_emotes(emotes: list, guild: discord.Guild, links: dict):
         if emotes[i] in existing_emotes:
             ids[emotes[i]] = existing_emotes[emotes[i]]
         else:
-            ids[emotes[i]] = await guild.create_custom_emoji(name=regify(emotes[i]), image=image_at(links[emotes[i]]))
+            ids[emotes[i]] = await guild.create_custom_emoji(name=emotes[i], image=image_at(links[emotes[i]]))
 
     # replace all of the remaining emotes
     for i in range(start_replace_ind, len(emotes)):

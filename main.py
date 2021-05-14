@@ -2,6 +2,7 @@ from threading import Thread
 import discord
 import flask
 import program
+import tools
 
 client = discord.Client()
 
@@ -16,7 +17,7 @@ async def on_message(message):
     await program.on_message(message)
 
 # start a flask server
-token = program.tools.lines["token"]
+token = tools.lines["token"]
 
 app = flask.Flask("Starting app")
 def run():
