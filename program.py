@@ -6,6 +6,14 @@ links = {x.split("|")[0]: x.split("|")[1] for x in open("./emoji_links.txt", "rt
 async def on_ready(client: discord.Client):
     print(f"{client.user} connected")
 
+def needed(message: str):
+    needed_emotes = []
+    parts = message.split(":")
+    for i in range(1, len(parts), 2):
+        if parts[i] in links:
+            needed_emotes.append(parts[i])
+    return list(set(needed_emotes)), parts
+
 def replace_parts(message: str):
     parts = message.split(":")
     for i in range(1, len(parts), 2):
