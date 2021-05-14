@@ -1,10 +1,10 @@
 import requests
 import discord
 
-lines = open("./info.txt", "rt").readlines()
+lines = {x.split(": ")[0]: x.split(": ")[1] for x in open("./info.txt", "rt").readlines()}
 
 def get_hook_url():
-    return lines[1].split(": ")[1]
+    return lines["hook_url"]
 
 def webhook_imitate(message: str, user: discord.User):
     hook_url = get_hook_url()
