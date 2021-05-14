@@ -48,7 +48,7 @@ async def on_message(message: discord.Message):
             return
 
         # update emotes and get the update message
-        needed_ids = await tools.add_emotes(needed, cur_guild)
+        needed_ids = await tools.add_emotes(needed, cur_guild, links)
         k = replace_with_emotes(message.content, needed_ids)
 
         # send the new message
