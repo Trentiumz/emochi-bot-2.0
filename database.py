@@ -1,20 +1,25 @@
 from sync_queue import SyncQueue
+import os
 
 main_path = "./data/guild_info.txt"
 
 # guild id: guild_priority_list
 priorities = {}
-with open(main_path, "rt") as file:
-    lines = file.readlines()
-    for i in lines:
-        parts = i.split()
 
-        priorities[guild_id] = SyncQueue()
+try:
+    with open(main_path, "rt") as file:
+        lines = file.readlines()
+        for i in lines:
+            parts = i.split()
 
-        guild_id = int(parts[0])
-        name_priorities = parts[1:]
-        for i in name_priorities:
-            priorities[guild_id].append(i)
+            priorities[guild_id] = SyncQueue()
+
+            guild_id = int(parts[0])
+            name_priorities = parts[1:]
+            for i in name_priorities:
+                priorities[guild_id].append(i)
+except FileNotFoundError:
+    open(main_path, "x")
 
 def get_priorities(id_of: int) -> SyncQueue:
     if id_of not in priorities:
