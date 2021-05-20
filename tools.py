@@ -52,36 +52,3 @@ def image_at(emote_name: str) -> bytes:
     for ending in emote_file_names:
         if f"{emote_name}.{ending}" in emote_file_names[ending]:
             return open(f"{emote_path}{emote_name}.{ending}", "rb").read()
-
-
-# emotes: list of emote names
-async def add_emotes(emote_names: set, guild: discord.Guild) -> dict:
-    limit = guild.emoji_limit
-    guild_emotes = guild.emojis
-    # index we should start to replace instead of add emotes
-    num_to_add = (limit - len(guild_emotes))
-    emotes = {}
-    existing_emotes = {str(x.name): x for x in guild_emotes}
-
-    # make sure to replace existing emotes
-    for i in emote_names:
-        if i in existing_emotes:
-            emotes[i] = existing_emotes[i]
-    for i in emotes:
-        emote_names.remove(i)
-
-    # get what else we still need to add
-    emote_names = list(emote_names)
-    to_add = emote_names[:num_to_add]
-    to_replace = emote_names[num_to_add:]
-
-    # add all emotes possible
-    for i in to_add:
-        emotes[i] = await guild.create_custom_emoji(name=i, image=image_at(i))
-
-    # replace all of the remaining emotes
-    for i in range(len(to_replace)):
-        emotes[emote_names[i]] = await replace_emote(guild_emotes[i], emote_names[i], image_at(emote_names[i]))
-
-    # emotes: {name: emote object}
-    return emotes
