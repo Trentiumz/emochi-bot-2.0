@@ -94,5 +94,5 @@ async def send_webhook(message: discord.Message):
     # send the new message & delete original
     webhook_imitate(k, message.author)
 
-    await message.delete()
     webhook_updating = False
+    await message.delete()
