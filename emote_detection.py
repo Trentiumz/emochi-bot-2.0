@@ -91,7 +91,11 @@ async def send_webhook(message: discord.Message):
         k = re.sub(f":{emote_name}:", str(loaded_emotes[emote_name]), k)
 
     # send the new message & delete original
-    await webhook_imitate(k, message.author, message.channel)
+    file = None
+    if len(message.attachments) > 0:
+        await message.attachments[0].save(fp="./data/tmp.png")
+        file = discord.File(fp="./data/tmp.png")
+    await webhook_imitate(k, message.author, message.channel, file=file)
 
     webhook_updating = False
     await message.delete()

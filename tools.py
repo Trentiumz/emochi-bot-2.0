@@ -18,24 +18,22 @@ async def get_hook_url(channel: discord.TextChannel) -> str:
 
 
 # send webhook imitating another user
-async def webhook_imitate(message: str, user: discord.User, channel: discord.TextChannel):
-    hook_url = await get_hook_url(channel)
-    obj = {
-        "content": message,
-        "username": str(user.display_name),
-        "avatar_url": str(user.avatar_url)
-    }
-
-    requests.post(hook_url, json=obj)
+async def webhook_imitate(message: str, user: discord.User, channel: discord.TextChannel, file: discord.File = None):
+    hook = discord.Webhook.from_url(await get_hook_url(channel), adapter=discord.RequestsWebhookAdapter())
+    if file:
+        embed = discord.Embed()
+        embed.set_image(url="attachment://tmp.png")
+    hook.send(content=message, wait=False, username=str(user.display_name), avatar_url=str(user.avatar_url), file=file,
+              embed=embed)
 
 
 # send an empty webhook
-async def webhook_empty(message: str, channel: discord.TextChannel):
-    hook_url = await get_hook_url(channel.id)
-    obj = {
-        "content": message
-    }
-    requests.post(hook_url, json=obj)
+async def webhook_empty(message: str, channel: discord.TextChannel, file: discord.File = None):
+    hook = discord.Webhook.from_url(await get_hook_url(channel), adapter=discord.RequestsWebhookAdapter())
+    if file:
+        embed = discord.Embed()
+        embed.set_image(url="attachment://tmp.png")
+    hook.send(content=message, wait=False, file=file, embed=embed)
 
 
 # replace the current emote with a new one
@@ -44,9 +42,11 @@ async def replace_emote(to_remove: discord.Emoji, new_name: str, new_image: byte
     await to_remove.delete()
     return await guild.create_custom_emoji(name=new_name, image=new_image)
 
+
 # add an emote to the server
 async def add_emote(name: str, image: bytes, guild: discord.Guild) -> discord.Emoji:
     return await guild.create_custom_emoji(name=name, image=image)
+
 
 # get the image of some emote name
 def image_at(emote_name: str) -> bytes:
