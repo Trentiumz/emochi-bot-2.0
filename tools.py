@@ -44,11 +44,11 @@ async def replace_emote(to_remove: discord.Emoji, new_name: str, new_image: byte
     await to_remove.delete()
     return await guild.create_custom_emoji(name=new_name, image=new_image)
 
-
+# add an emote to the server
 async def add_emote(name: str, image: bytes, guild: discord.Guild) -> discord.Emoji:
     return await guild.create_custom_emoji(name=name, image=image)
 
-
+# get the image of some emote name
 def image_at(emote_name: str) -> bytes:
     for ending in emote_file_names:
         if f"{emote_name}.{ending}" in emote_file_names[ending]:

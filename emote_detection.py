@@ -45,7 +45,7 @@ async def add_emotes(emote_names: set, guild: discord.Guild) -> dict:
         curDB.append(replace[i])
 
     # emotes: {name: emote object}
-    database.save_to_file()
+    database.save_priorities()
     return emotes
 
 
