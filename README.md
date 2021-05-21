@@ -4,11 +4,9 @@ An Emoji bot for discord
 ## How to set it up
 Create an info.txt inside your working directory; in the same directory as your source files
 
-#### Inside info.txt, have 2 lines: 
+#### Inside info.txt, you have 1 line: 
 
 token: [bot token]
-
-hook_url: [webhook url going to your desired channel]
 
 ## Current progress
 
