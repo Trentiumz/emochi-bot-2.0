@@ -2,7 +2,9 @@ from collections import deque
 
 
 class SyncQueue:
-    main = deque()
+    main: deque = None
+    def __init__(self):
+        self.main = deque()
 
     def append(self, to_add):
         self.main.append(to_add)

@@ -13,7 +13,7 @@ regex_for_emotes = "|".join(emotes)
 async def add_emotes(emote_names: set, guild: discord.Guild) -> dict:
     limit = guild.emoji_limit
     guild_emotes = await guild.fetch_emojis()
-    curDB = database.get_priorities(guild.id)
+    curDB: SyncQueue = database.get_priorities(guild.id)
     curDB.sync({x.name for x in guild_emotes})
 
     # index we should start to replace instead of add emotes
@@ -78,7 +78,7 @@ async def send_webhook(message: discord.Message):
         return
     # if he needs too many emotes, then boop we quit it
     if len(needed) > guild.emoji_limit // 5:
-        webhook_empty(f"Turns out the server doesn't have enough emote slots to hold your {len(needed)} emotes!")
+        await webhook_empty(f"Turns out the server doesn't have enough emote slots to hold your {len(needed)} emotes!", message.channel)
         webhook_updating = False
         return
 
@@ -91,7 +91,7 @@ async def send_webhook(message: discord.Message):
         k = re.sub(f":{emote_name}:", str(loaded_emotes[emote_name]), k)
 
     # send the new message & delete original
-    webhook_imitate(k, message.author)
+    await webhook_imitate(k, message.author, message.channel)
 
     webhook_updating = False
     await message.delete()

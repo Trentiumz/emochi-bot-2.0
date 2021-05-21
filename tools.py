@@ -1,4 +1,5 @@
 import requests
+import database
 import re
 import os
 import discord
@@ -12,13 +13,13 @@ emote_file_names = {"png": set([x for x in emote_file_name_list if re.match(".*\
                     "gif": set([x for x in emote_file_name_list if re.match(".*\.gif", x)])}
 
 
-def get_hook_url() -> str:
-    return lines["hook_url"]
+async def get_hook_url(channel: discord.TextChannel) -> str:
+    return await database.get_webhook(channel)
 
 
 # send webhook imitating another user
-def webhook_imitate(message: str, user: discord.User):
-    hook_url = get_hook_url()
+async def webhook_imitate(message: str, user: discord.User, channel: discord.TextChannel):
+    hook_url = await get_hook_url(channel)
     obj = {
         "content": message,
         "username": str(user.display_name),
@@ -29,8 +30,8 @@ def webhook_imitate(message: str, user: discord.User):
 
 
 # send an empty webhook
-def webhook_empty(message: str):
-    hook_url = get_hook_url()
+async def webhook_empty(message: str, channel: discord.TextChannel):
+    hook_url = await get_hook_url(channel.id)
     obj = {
         "content": message
     }
