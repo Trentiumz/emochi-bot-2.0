@@ -1,13 +1,9 @@
 from sync_queue import SyncQueue
 import asyncio
-from tools import *
+import tools
+import discord
 import re
 import database
-
-# list of emotes but formatted for regex
-emotes = [f":{s.split('.')[0]}:" for s in emote_file_name_list]
-# a regex for which we can find all of the possible emotes
-regex_for_emotes = "|".join(emotes)
 
 # emotes: list of emote names
 async def add_emotes(emote_names: set, guild: discord.Guild) -> dict:
@@ -36,12 +32,12 @@ async def add_emotes(emote_names: set, guild: discord.Guild) -> dict:
 
     # add all emotes possible
     for i in add_to:
-        emotes[i] = await guild.create_custom_emoji(name=i, image=image_at(i))
+        emotes[i] = await guild.create_custom_emoji(name=i, image=tools.image_at(i))
         curDB.append(i)
 
     # replace all of the remaining emotes
     for i in range(len(replace)):
-        emotes[replace[i]] = await replace_emote(existing_emotes[curDB.popleft()], replace[i], image_at(replace[i]))
+        emotes[replace[i]] = await tools.replace_emote(existing_emotes[curDB.popleft()], replace[i], tools.image_at(replace[i]))
         curDB.append(replace[i])
 
     # emotes: {name: emote object}
@@ -51,10 +47,10 @@ async def add_emotes(emote_names: set, guild: discord.Guild) -> dict:
 
 # find what emote names we need
 def needed_emotes(message: str) -> list:
-    # remove emotest that are already processed
+    # remove emotes that are already processed
     message = re.sub("<:.+:\d+>|<a:.+:\d+>", "", message)
     # find all remaining wanted emotes (that we have)
-    needed = {x[1:-1] for x in re.findall(regex_for_emotes, message)}
+    needed = {x[1:-1] for x in re.findall(tools.regex_for_emotes, message)}
     return list(needed)
 
 
@@ -78,7 +74,7 @@ async def send_webhook(message: discord.Message):
         return
     # if he needs too many emotes, then boop we quit it
     if len(needed) > guild.emoji_limit // 5:
-        await webhook_empty(f"Turns out the server doesn't have enough emote slots to hold your {len(needed)} emotes!", message.channel)
+        await tools.webhook_empty(f"Turns out the server doesn't have enough emote slots to hold your {len(needed)} emotes!", message.channel)
         webhook_updating = False
         return
 
@@ -95,7 +91,7 @@ async def send_webhook(message: discord.Message):
     if len(message.attachments) > 0:
         await message.attachments[0].save(fp="./data/tmp.png")
         file = discord.File(fp="./data/tmp.png")
-    await webhook_imitate(k, message.author, message.channel, file=file)
+    await tools.webhook_imitate(k, message.author, message.channel, file=file)
 
     webhook_updating = False
     await message.delete()
