@@ -8,7 +8,7 @@ import database
 # emotes: list of emote names
 async def add_emotes(emote_names: set, guild: discord.Guild) -> dict:
     limit = guild.emoji_limit
-    guild_emotes = await guild.fetch_emojis()
+    guild_emotes = guild.emojis
     curDB: SyncQueue = database.get_priorities(guild.id)
     curDB.sync({x.name for x in guild_emotes})
 
@@ -69,9 +69,11 @@ async def send_webhook(message: discord.Message):
 
     # get the emotes to replace, all just pure names of the emotes
     needed = list(needed_emotes(message.content))
+    # if there aren't any replacements needed, then don't do anything
     if len(needed) == 0:
         webhook_updating = False
         return
+
     # if he needs too many emotes, then boop we quit it
     if len(needed) > guild.emoji_limit // 5:
         await tools.webhook_empty(f"Turns out the server doesn't have enough emote slots to hold your {len(needed)} emotes!", message.channel)

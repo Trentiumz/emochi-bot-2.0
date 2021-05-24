@@ -1,5 +1,4 @@
 from PIL import Image
-import gifmaker
 from PIL import ImageSequence
 import tools
 import requests

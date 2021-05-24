@@ -20,4 +20,3 @@ Werkzeug==2.0.0
 yarl==1.6.3
 
 Pillow~=8.2.0
-gifmaker~=1.5
