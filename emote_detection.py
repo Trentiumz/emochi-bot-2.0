@@ -53,6 +53,15 @@ def needed_emotes(message: str) -> list:
     needed = {x[1:-1] for x in re.findall(tools.regex_for_emotes, message)}
     return list(needed)
 
+def make_emotes_important(message: str, guild: discord.Guild):
+    emotes = re.findall("<:.+:\d+>|<a:.+:\d+>", message)
+    curDB: SyncQueue = database.get_priorities(guild.id)
+    if len(emotes) == 0:
+        return
+    for i in emotes:
+        name = i.split(":")[1]
+        curDB.move_to_front(name)
+    database.save_priorities()
 
 webhook_updating = False
 
@@ -66,6 +75,9 @@ async def send_webhook(message: discord.Message):
 
     webhook_updating = True
     guild: discord.Guild = message.guild
+
+    # emotes that are used will be moved to the front of the queue
+    make_emotes_important(message.content, message.guild)
 
     # get the emotes to replace, all just pure names of the emotes
     needed = list(needed_emotes(message.content))
