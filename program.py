@@ -3,6 +3,7 @@ import tools
 import emote_add
 import database
 import emote_detection
+import traceback
 
 async def on_ready(client: discord.Client):
     database.init()
@@ -22,4 +23,4 @@ async def on_message(message: discord.Message):
                 await emote_detection.send_webhook(message)
             except Exception as e:
                 emote_detection.webhook_updating = False
-                print(e)
+                print(traceback.format_exc())
