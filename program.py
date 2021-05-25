@@ -15,6 +15,7 @@ async def on_message(message: discord.Message):
             image = emote_add.get_image(message.content.split(" ")[-1])
             frames = emote_add.rescale_image(image)
             emote_add.save_image(frames, message.content.split(" ")[1])
+            await message.add_reaction("✅")
         else:
             # send a webhook
             try:
