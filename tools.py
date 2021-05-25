@@ -2,6 +2,7 @@ import database
 import re
 import os
 import discord
+import requests
 
 lines = {x.split(": ")[0]: x.split(": ")[1] for x in open("./info.txt", "rt").readlines()}
 
@@ -36,7 +37,13 @@ async def get_hook_url(channel: discord.TextChannel) -> str:
 # send webhook imitating another user
 async def webhook_imitate(message: str, user: discord.User, channel: discord.TextChannel, file: discord.File = None):
     hook = discord.Webhook.from_url(await get_hook_url(channel), adapter=discord.RequestsWebhookAdapter())
-    hook.send(content=message, wait=False, username=str(user.display_name), avatar_url=str(user.avatar_url), file=file)
+    try:
+        hook.send(content=message, wait=False, username=str(user.display_name), avatar_url=str(user.avatar_url), file=file)
+    except Exception as e:
+        print(e, ", creating new webhook")
+        await database.new_webhook(channel.id)
+        hook = discord.Webhook.from_url(await get_hook_url(channel), adapter=discord.RequestsWebhookAdapter())
+        hook.send(content=message, wait=False, username=str(user.display_name), avatar_url=str(user.avatar_url), file=file)
 
 
 # send an empty webhook
