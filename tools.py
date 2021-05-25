@@ -41,7 +41,7 @@ async def webhook_imitate(message: str, user: discord.User, channel: discord.Tex
         hook.send(content=message, wait=False, username=str(user.display_name), avatar_url=str(user.avatar_url), file=file)
     except Exception as e:
         print(e, ", creating new webhook")
-        await database.new_webhook(channel.id)
+        await database.new_webhook(channel)
         hook = discord.Webhook.from_url(await get_hook_url(channel), adapter=discord.RequestsWebhookAdapter())
         hook.send(content=message, wait=False, username=str(user.display_name), avatar_url=str(user.avatar_url), file=file)
 
