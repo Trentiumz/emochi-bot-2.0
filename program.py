@@ -18,6 +18,10 @@ async def on_message(message: discord.Message):
             frames = emote_add.rescale_image(image)
             emote_add.save_image(frames, message.content.split(" ")[1])
             await message.add_reaction("✅")
+        elif message.content.split(" ")[0] == "?removeemote" and len(message.content.split(" ")) == 2:
+            emote_name = message.content.split(" ")[1]
+            emote_add.remove_image(emote_name)
+            await message.add_reaction("✅")
         else:
             # send a webhook
             try:

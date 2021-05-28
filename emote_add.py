@@ -1,9 +1,9 @@
 from PIL import Image
+import os
 from gif_saving import save_transparent_gif
 from PIL import ImageSequence
 import tools
 import requests
-import numpy
 
 def get_image(url: str) -> Image:
     part = requests.get(url)
@@ -27,10 +27,19 @@ def rescale_image(image: Image) -> list:
 
         return frames
 
+# save an image, name is just a name, frames is a list of frames
 def save_image(frames: list, name: str):
     if len(frames) > 1:
-        save_transparent_gif(frames, [int(x.info["duration"]) for x in frames], f"./data/emotes/{name}.gif")
+        save_transparent_gif(frames, [int(x.info["duration"]) for x in frames], tools.emote_path + f"{name}.gif")
         tools.saved_emote_update(f"{name}.gif")
     else:
-        frames[0].save(f"./data/emotes/{name}.png")
+        frames[0].save(tools.emote_path + f"{name}.png")
         tools.saved_emote_update(f"{name}.png")
+
+# name is just the name of the emote, no endings
+def remove_image(name: str):
+    for ending in tools.emote_file_names:
+        if f"{name}.{ending}" in tools.emote_file_names[ending]:
+            os.remove(tools.emote_path + f"{name}.{ending}")
+            tools.removed_emote_update(f"{name}.{ending}")
+            break

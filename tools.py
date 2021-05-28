@@ -2,7 +2,6 @@ import database
 import re
 import os
 import discord
-import requests
 
 lines = {x.split(": ")[0]: x.split(": ")[1] for x in open("./info.txt", "rt").readlines()}
 
@@ -11,17 +10,20 @@ emote_file_names = {}
 emote_file_name_list = []
 regex_for_emotes = ""
 
+def update_regex():
+    global regex_for_emotes
+    # list of emotes but formatted for regex
+    emotes = [f":{s.split('.')[0]}:" for s in emote_file_name_list]
+    # a regex for which we can find all of the possible emotes
+    regex_for_emotes = "|".join(emotes)
+
 def load_emotes():
     global emote_file_names, emote_file_name_list, regex_for_emotes
     emote_file_name_list = os.listdir(emote_path)
     # emote_file_names[ending] = set of files with that ending
     emote_file_names = {"png": set([x for x in emote_file_name_list if re.match(".*\.png", x)]),
                         "gif": set([x for x in emote_file_name_list if re.match(".*\.gif", x)])}
-
-    # list of emotes but formatted for regex
-    emotes = [f":{s.split('.')[0]}:" for s in emote_file_name_list]
-    # a regex for which we can find all of the possible emotes
-    regex_for_emotes = "|".join(emotes)
+    update_regex()
 
 # name is full; such as thing.png, not just thing
 def saved_emote_update(name: str):
@@ -29,6 +31,15 @@ def saved_emote_update(name: str):
     emote_file_name_list.append(name)
     emote_file_names[name.split(".")[1]].add(name)
     regex_for_emotes = regex_for_emotes + f"|:{name.split('.')[0]}:"
+
+# name is full; such as thing.png, not just thing
+def removed_emote_update(name: str):
+    global emote_file_names, emote_file_name_list, regex_for_emotes
+    emote_file_name_list.remove(name)
+    emote_file_names[name.split(".")[1]].remove(name)
+
+    update_regex()
+
 
 async def get_hook_url(channel: discord.TextChannel) -> str:
     return await database.get_webhook(channel)
