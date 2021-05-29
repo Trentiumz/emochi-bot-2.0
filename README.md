@@ -10,7 +10,7 @@ token: [bot token]
 
 ## Current progress
 
-This bot now works, but there are still a few optimizations and functionality to add
+The bot works mostly, there's a few things I guess I can add and fix, but I'm too lazy to add them B)
 
 ## API's used
 - Discord.py
